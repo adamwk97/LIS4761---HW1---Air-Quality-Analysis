@@ -1,0 +1,110 @@
+<h1 id="adam-kelly-lis4761-hw1-visualization-homework---air-quality-analysis">Adam Kelly LIS4761 HW1: Visualization Homework-- Air Quality Analysis</h1>
+<p>This project utilizes the default R dataset 'airquality' containing the following variables:</p>
+<ul>
+<li><p>Ozone: Mean ozone in parts per billion from 1300 to 1500 hours at Roosevelt Island</p></li>
+<li><p>Solar.R: Solar radiation in Langleys in the frequency band 4000--7700 Angstroms from 0800 to 1200 hours at Central Park</p></li>
+<li><p>Wind: Average wind speed in miles per hour at 0700 and 1000 hours at LaGuardia Airport</p></li>
+<li><p>Temp: Maximum daily temperature in degrees Fahrenheit at La Guardia Airport. _____________________________________________________________________________________________</p></li>
+</ul>
+<p>First the data is cleaned (fixing NA's or invalid data)</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ggplot2)
+<span class="kw">library</span>(reshape2)
+<span class="kw">library</span>(lubridate)
+<span class="kw">library</span>(tidyr)
+<span class="kw">library</span>(plyr)
+
+air =<span class="st"> </span><span class="kw">data.frame</span>(airquality)
+
+for(i in <span class="dv">1</span>:<span class="kw">ncol</span>(air)){
+  air[<span class="kw">is.na</span>(air[,i]), i] &lt;-<span class="st"> </span><span class="kw">mean</span>(air[,i], <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)
+}</code></pre>
+<p>Next are visualizations showing the different variables in our dataset.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(air, <span class="kw">aes</span>(air$Ozone))+<span class="kw">geom_histogram</span>()</code></pre>
+<div class="figure">
+<img src="Datatext-HW-1----Air-Quality-Analysis_files/figure-markdown_github/histogram-1.png" />
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(air, <span class="kw">aes</span>(air$Solar.R))+<span class="kw">geom_histogram</span>()</code></pre>
+<div class="figure">
+<img src="Datatext-HW-1----Air-Quality-Analysis_files/figure-markdown_github/histogram-2.png" />
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(air, <span class="kw">aes</span>(air$Wind))+<span class="kw">geom_histogram</span>()</code></pre>
+<div class="figure">
+<img src="Datatext-HW-1----Air-Quality-Analysis_files/figure-markdown_github/histogram-3.png" />
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(air, <span class="kw">aes</span>(air$Temp))+<span class="kw">geom_histogram</span>()</code></pre>
+<div class="figure">
+<img src="Datatext-HW-1----Air-Quality-Analysis_files/figure-markdown_github/histogram-4.png" />
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(air, <span class="kw">aes</span>(air$Month))+<span class="kw">geom_histogram</span>()</code></pre>
+<div class="figure">
+<img src="Datatext-HW-1----Air-Quality-Analysis_files/figure-markdown_github/histogram-5.png" />
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(air, <span class="kw">aes</span>(air$Day))+<span class="kw">geom_histogram</span>()</code></pre>
+<div class="figure">
+<img src="Datatext-HW-1----Air-Quality-Analysis_files/figure-markdown_github/histogram-6.png" />
+</div>
+<p>A boxplot to give a different visualization using variables Ozone and Wind.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(air, <span class="kw">aes</span>(air$Ozone, air$Wind, <span class="dt">group =</span> <span class="kw">factor</span>(<span class="dv">0</span>)))+<span class="kw">geom_boxplot</span>()+<span class="kw">xlab</span>(<span class="st">&quot;Air Ozone (Mean in Parts per Billion)&quot;</span>)+<span class="kw">ylab</span>(<span class="st">&quot;Air Windspeed (mph)&quot;</span>)</code></pre>
+<div class="figure">
+<img src="Datatext-HW-1----Air-Quality-Analysis_files/figure-markdown_github/boxplot-1.png" />
+</div>
+<p>We then take our Month and Day columns and convert them to a date table format - this data is from the year 1973.</p>
+<pre class="sourceCode r"><code class="sourceCode r">dates =<span class="st"> </span><span class="kw">as.Date</span>(<span class="kw">with</span>(air, <span class="kw">paste</span>(Month, Day,<span class="dt">sep=</span><span class="st">&quot;-&quot;</span>)), <span class="st">&quot;%m-%d&quot;</span>)
+<span class="kw">year</span>(dates) =<span class="st"> </span><span class="dv">1973</span>
+air$Dates =<span class="st"> </span>dates</code></pre>
+<p>Next we create four individual line plots to visuzalize each of our variables.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(air, <span class="kw">aes</span>(air$Dates, air$Ozone, <span class="dt">color =</span> air$Ozone))+<span class="kw">geom_line</span>()+<span class="kw">xlab</span>(<span class="st">&quot;Dates&quot;</span>)+<span class="kw">ylab</span>(<span class="st">&quot;Ozone (Mean in Parts per Billion)&quot;</span>)+<span class="kw">labs</span>(<span class="dt">color =</span> <span class="st">&quot;Ozone&quot;</span>)</code></pre>
+<div class="figure">
+<img src="Datatext-HW-1----Air-Quality-Analysis_files/figure-markdown_github/lineplots-1.png" />
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(air, <span class="kw">aes</span>(air$Dates, air$Wind, <span class="dt">color =</span> air$Wind))+<span class="kw">geom_line</span>()+<span class="kw">xlab</span>(<span class="st">&quot;Dates&quot;</span>)+<span class="kw">ylab</span>(<span class="st">&quot;Windspeed (mph)&quot;</span>)+<span class="kw">labs</span>(<span class="dt">color =</span> <span class="st">&quot;Windspeed (mph)&quot;</span>)</code></pre>
+<div class="figure">
+<img src="Datatext-HW-1----Air-Quality-Analysis_files/figure-markdown_github/lineplots-2.png" />
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(air, <span class="kw">aes</span>(air$Dates, air$Temp, <span class="dt">color =</span> air$Temp))+<span class="kw">geom_line</span>()+<span class="kw">xlab</span>(<span class="st">&quot;Dates&quot;</span>)+<span class="kw">ylab</span>(<span class="st">&quot;Temperature (F)&quot;</span>)+<span class="kw">labs</span>(<span class="dt">color =</span> <span class="st">&quot;Temperature (F)&quot;</span>)</code></pre>
+<div class="figure">
+<img src="Datatext-HW-1----Air-Quality-Analysis_files/figure-markdown_github/lineplots-3.png" />
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(air, <span class="kw">aes</span>(air$Dates, air$Solar.R, <span class="dt">color =</span> air$Solar.R))+<span class="kw">geom_line</span>()+<span class="kw">xlab</span>(<span class="st">&quot;Dates&quot;</span>)+<span class="kw">ylab</span>(<span class="st">&quot;Solar Radiation (frequency)&quot;</span>)+<span class="kw">labs</span>(<span class="dt">color =</span> <span class="st">&quot;Solar Radiation&quot;</span>)</code></pre>
+<div class="figure">
+<img src="Datatext-HW-1----Air-Quality-Analysis_files/figure-markdown_github/lineplots-4.png" />
+</div>
+<p>A combined line plot of all the variables lets us see the relationships among one another.</p>
+<pre class="sourceCode r"><code class="sourceCode r">air2 =<span class="st"> </span><span class="kw">subset</span>(air, <span class="dt">select =</span> -<span class="kw">c</span>(Month, Day))
+air2$Wind =<span class="st"> </span>air2$Wind*<span class="dv">10</span>
+air2 =<span class="st"> </span><span class="kw">gather</span>(air2, Variable, Value, -Dates)
+air2$Value =<span class="st"> </span><span class="kw">round</span>(air2$Value, <span class="dt">digits =</span> <span class="dv">2</span>)
+
+<span class="kw">ggplot</span>(air2,<span class="kw">aes</span>(air2$Dates, air2$Value, <span class="dt">color =</span> air2$Variable))+<span class="kw">geom_line</span>()+<span class="kw">xlab</span>(<span class="st">&quot;Date&quot;</span>)+<span class="kw">ylab</span>(<span class="st">&quot;Value&quot;</span>)+<span class="kw">labs</span>(<span class="dt">color =</span> <span class="st">&quot;Variable&quot;</span>)</code></pre>
+<div class="figure">
+<img src="Datatext-HW-1----Air-Quality-Analysis_files/figure-markdown_github/combinedplot-1.png" />
+</div>
+<p>A heatmap allows us an alternative visualization.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(air2, <span class="kw">aes</span>(air2$Dates, air2$Variable))+<span class="kw">geom_tile</span>()+<span class="st"> </span><span class="kw">geom_raster</span>(<span class="kw">aes</span>(<span class="dt">fill =</span> Value))+<span class="kw">xlab</span>(<span class="st">&quot;Date&quot;</span>)+<span class="kw">ylab</span>(<span class="st">&quot;Variable&quot;</span>)+<span class="kw">labs</span>(<span class="dt">color =</span> <span class="st">&quot;Value&quot;</span>)</code></pre>
+<div class="figure">
+<img src="Datatext-HW-1----Air-Quality-Analysis_files/figure-markdown_github/unnamed-chunk-1-1.png" />
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(air2, <span class="kw">aes</span>(air2$Value, air2$Variable))+<span class="kw">stat_density</span>(<span class="kw">aes</span>(<span class="dt">fill =</span> <span class="kw">stat</span>(count)), <span class="dt">geom =</span> <span class="st">&quot;raster&quot;</span>, <span class="dt">position =</span> <span class="st">&quot;identity&quot;</span>)+<span class="kw">xlab</span>(<span class="st">&quot;Value&quot;</span>)+<span class="kw">ylab</span>(<span class="st">&quot;Variable&quot;</span>)</code></pre>
+<div class="figure">
+<img src="Datatext-HW-1----Air-Quality-Analysis_files/figure-markdown_github/unnamed-chunk-1-2.png" />
+</div>
+<p>Last is a scatterplot showing once again the relationship between our variables.</p>
+<pre class="sourceCode r"><code class="sourceCode r">air =<span class="st"> </span><span class="kw">data.frame</span>(airquality)
+
+for(i in <span class="dv">1</span>:<span class="kw">ncol</span>(air)){
+  air[<span class="kw">is.na</span>(air[,i]), i] &lt;-<span class="st"> </span><span class="kw">mean</span>(air[,i], <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)
+}
+
+dates =<span class="st"> </span><span class="kw">as.Date</span>(<span class="kw">with</span>(air, <span class="kw">paste</span>(Month, Day,<span class="dt">sep=</span><span class="st">&quot;-&quot;</span>)), <span class="st">&quot;%m-%d&quot;</span>)
+<span class="kw">year</span>(dates) =<span class="st"> </span><span class="dv">1973</span>
+air$Dates =<span class="st"> </span>dates
+
+
+<span class="kw">ggplot</span>(air, <span class="kw">aes</span>(air$Wind, air$Temp, <span class="dt">color =</span> air$Solar.R, <span class="dt">size =</span> air$Ozone))+<span class="kw">geom_jitter</span>()+<span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;Windspeed (mph)&quot;</span>)+<span class="kw">ylab</span>(<span class="st">&quot;Temperature (F)&quot;</span>)+<span class="kw">labs</span>(<span class="dt">color =</span> <span class="st">&quot;Solar Radiation&quot;</span>)</code></pre>
+<div class="figure">
+<img src="Datatext-HW-1----Air-Quality-Analysis_files/figure-markdown_github/scatterplot-1.png" />
+</div>
+<p>Question 1 - &quot;Do you see any patterns after exploring the data?&quot;</p>
+<p>I would say the most notable pattern that I see are from the combined lineplot showing that while each of the variables had volatile peaks and troughs, only solar radiation seemed to have a steady decline throughout the year, while all the other variables ended fairly close to where they started. Its range also got smaller which made it more consistent by the end of the year. This can also be seen in the heatmap, where the gradient seemed to stay rather consistent for each variable except Solar Radiation which ends slightly dimmer. I also notice that in the scatterplot, an observable cluster of data in the top left corner shows that the slower speed the wind travels, the higher temperature the air was. Not only that, but the dots are also larger in this cluster which tells us that the mean ozone is higher as well.</p>
+<p>Question 2 - What was the most useful visualization?</p>
+<p>I believe the scatterplot is the most useful visualization because it gives the most information and is also the easiest to read. While it may have not been the most complex visualization to create, it gives a very quick and simple look at each specific variable in the dataset. Clusters are easy to spot as well as linearity and the distribution of the data as a whole.</p>
